@@ -1,7 +1,7 @@
 // Custom Navigation Drawer / Sidebar with Image and Icon in Menu Options
 // https://aboutreact.com/custom-navigation-drawer-sidebar-with-image-and-icon-in-menu-options/
 
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   SafeAreaView,
@@ -23,11 +23,15 @@ import side_menu_clsoe from "../../lib/images";
 import styles from "./styles";
 import { Divider } from "react-native-paper";
 import { useSelector } from "react-redux";
+import { useDashboardContext } from "../../Context/DashboardContext";
+import { useAuthContext } from "../../Context/AuthContext";
 
 const CustomSidebar = (props) => {
   const BASE_PATH =
     "https://raw.githubusercontent.com/AboutReact/sampleresource/master/";
   const proileImage = "react_logo.png";
+
+  const {loginuser,setloginuser,getdataformlocal} = useAuthContext();
 
 
   return (
@@ -57,7 +61,7 @@ const CustomSidebar = (props) => {
         </TouchableOpacity>
 
         <View>
-          <Text style={styles.profilename}>Andrew Stuart</Text>
+          <Text style={styles.profilename}>{loginuser?.email}</Text>
           <TouchableOpacity>
             <Text style={styles.walletmoney}>$200</Text>
           </TouchableOpacity>
@@ -67,12 +71,13 @@ const CustomSidebar = (props) => {
 
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
-        {/* <DrawerItem
+        <DrawerItem labelStyle={styles.labelStyle}
           label="Visit Us"
           onPress={() => Linking.openURL("https://aboutreact.com/")}
         />
         <View style={styles.customItem}>
           <Text
+          style={styles.labelStyle}
             onPress={() => {
               Linking.openURL("https://aboutreact.com/");
             }}
@@ -83,17 +88,17 @@ const CustomSidebar = (props) => {
             source={{ uri: BASE_PATH + "star_filled.png" }}
             style={styles.iconStyle}
           />
-        </View> */}
+        </View>
       </DrawerContentScrollView>
-      {/* <Text
+      <Text
         style={{
           fontSize: 16,
           textAlign: "center",
           color: "grey",
         }}
       >
-        www.aboutreact.com
-      </Text> */}
+        www.apnak.art.com
+      </Text>
     </SafeAreaView>
   );
 };

@@ -12,6 +12,7 @@ import styles from "./styles";
 import DashBoard from "../../DashboardTab/Dashboard";
 import Imagepicker from "../../Imagepicker";
 import Notifications from "../../DashboardTab/Notifications";
+import Account from "../../DashboardTab/Account/Account";
 
 
 
@@ -92,12 +93,12 @@ const Tabnavigator = () => {
       />
 
 <Tab.Screen
-        name="Imagepicker"
-        component={Imagepicker}
+        name="Account"
+        component={Account}
         options={{
           tabBarLabel: ({ focused }) => (
             <Text style={focused ? styles.text : styles.text1}>
-              Imagepicker
+              Account
             </Text>
           ),
           tabBarIcon: ({ focused }) => (

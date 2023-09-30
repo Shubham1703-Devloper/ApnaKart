@@ -5,6 +5,8 @@ const windowHeight = Dimensions.get("screen").height;
 export default styles = StyleSheet.create({
   container: {
     flex: 1,
+    // backgroundColor:'rgba(0,0,0,0.)',
+    
   },
   side: {
     resizeMode: "center",
@@ -55,5 +57,10 @@ export default styles = StyleSheet.create({
       marginRight:10,
       justifyContent:'center',
       alignItems:'flex-end'
+  },
+
+  labelStyle:{
+    color:"grey" ,
+    marginLeft:20
   }
 });
