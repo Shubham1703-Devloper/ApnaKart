@@ -1,54 +1,39 @@
-import { StyleSheet, Dimensions } from "react-native"
+import {StyleSheet, Dimensions} from 'react-native';
 
-const screenWidth = Dimensions.get("screen").width
-const screenHeight = Dimensions.get("screen").height
+const screenWidth = Dimensions.get('screen').width;
+const screenHeight = Dimensions.get('screen').height;
 
 export default styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   innercontainer: {
-    zIndex: 1,
+    zIndex:1,
   },
-  shopingkart:{
+  shopingkart: {
     backgroundColor: '#fc4e03',
     borderRadius: 50,
-    height: 12,
-    width: 12,
+    height: 15,
+    width: 15,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    right: 8,
-    top: 5,
+    right: 6,
+    top: 3,
   },
-
-  FlatListView:{
-    paddingTop:65
-  }
-,
-
-
-  modalView: {
-    height: 620,
-    width: screenWidth,
-    margin: 20,
-    marginBottom: -50,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+  rediconText:{
+    fontSize: 10, color: 'white', fontWeight: 'bold'
   },
-  subModalView: {
+  menuStyle:{
     flexDirection: 'row',
-    marginTop: 18, marginHorizontal: 20,
+    justifyContent: 'center',
   },
+  FlatListView: {
+    // paddingTop: 65,
+    // paddingHorizontal:10,
+    alignItems:'center'
+  },
+ 
   textStyle: {
     color: 'white',
     fontWeight: 'bold',
@@ -77,7 +62,7 @@ export default styles = StyleSheet.create({
     borderColor: '#fff',
     height: 50,
     borderRadius: 5,
-    marginTop: 3
+    marginTop: 3,
   },
   buttonImageIconStyle: {
     tintColor: 'black',
@@ -96,7 +81,7 @@ export default styles = StyleSheet.create({
   buttonEndStyle: {
     flexDirection: 'row',
     marginStart: 15,
-    marginTop: 20
+    marginTop: 20,
   },
   filterTextStyle: {
     fontSize: 25,
@@ -112,16 +97,15 @@ export default styles = StyleSheet.create({
     marginStart: 10,
     marginTop: 20,
     backgroundColor: 'blue',
-
   },
 
   borderStyleBase: {
     width: 30,
-    height: 45
+    height: 45,
   },
 
   borderStyleHighLighted: {
-    borderColor: "#03DAC6",
+    borderColor: '#03DAC6',
   },
 
   underlineStyleBase: {
@@ -132,18 +116,17 @@ export default styles = StyleSheet.create({
   },
 
   underlineStyleHighLighted: {
-    borderColor: "#03DAC6",
+    borderColor: '#03DAC6',
   },
 
   ///item styles
 
-
-  main:{
-    width:'47%',
-    margin:5,
-    padding:10,
-    borderRadius:10,
-    backgroundColor:'white',
+  main: {
+    width: '45%',
+    margin: 10,
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: 'white',
     shadowColor: '#000',
     shadowOffset: {
       width: 2,
@@ -153,25 +136,45 @@ export default styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  imagestyle:{
-    width:'100%',
-    height:200,
+  imagestyle: {
+    width: '100%',
+    height: 200,
   },
-  TittleStyle:{
-    fontSize:16,
-    color:'black',
+  TittleStyle: {
+    fontSize: 16,
+    color: 'black',
   },
-  PriceStyle:{
-    fontSize:18,
-    color:'black',
-    fontWeight:'bold'
+  PriceStyle: {
+    fontSize: 18,
+    color: 'black',
+    fontWeight: 'bold',
   },
-  buttonStyle:{
+  buttonStyle: {
     backgroundColor: '#1486e9',
-    borderColor:'#1486e9'
+    borderColor: '#1486e9',
   },
-  titleStyle:{
-    fontSize:14
-  }
+  titleStyle: {
+    fontSize: 14,
+  },
 
-})
+
+
+///nodata found Text
+
+
+  nodataStyle:{
+    justifyContent:'center',
+    alignItems:'center',
+    marginTop:20,
+    marginBottom:10
+  }
+    ,
+  
+    nodataTextStyle:{
+      fontSize:18
+    },
+
+    ListFooterComponent:{
+      marginBottom:70
+    }
+});

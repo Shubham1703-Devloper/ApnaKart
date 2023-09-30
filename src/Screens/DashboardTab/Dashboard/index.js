@@ -1,6 +1,7 @@
-import {PropTypes} from 'prop-types';
+
 import React, {PureComponent, useEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Image,
   StatusBar,
@@ -8,19 +9,18 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {View, Text, Dimensions, TouchableHighlight} from 'react-native';
-// import {Button} from 'react-native';
-import Toptabnavigator from '../../Toptabnavigator';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import OTPInputView from '@twotalltotems/react-native-otp-input';
 import styles from './styles';
-import {Rating, AirbnbRating} from 'react-native-ratings';
 import CustomButton from '../../../Components/Button';
-import Button from '../../../Components/Button';
-import {Appbar, Menu, Provider} from 'react-native-paper';
+import {ActivityIndicator, Appbar, MD2Colors, Menu, Provider} from 'react-native-paper';
 import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
-import {ProductlistItems, addItemtoKart} from '../../../Redux/Actions/Actions';
-import {stat} from 'react-native-fs';
+import {
+  ProductlistItems,
+  RemovelistItems,
+  addItemtoKart,
+} from '../../../Redux/Actions/Actions';
+import CustomTopBar from '../../../Components/CustomTopBar';
+import { useDashboardContext } from '../../../Context/DashboardContext';
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
 const screenWidth = Dimensions.get('screen').width;
@@ -31,20 +31,26 @@ const DashBoard = props => {
   const [visible, setVisible] = React.useState(false);
   const [productlist, setProductlist] = React.useState([]);
   const [data, setdata] = React.useState([]);
+   const [Loading, setLoadinga] = React.useState(true);
   const dispatch = useDispatch();
+  const {ProductItemPress, Listdata,
+    setListdata,setAddkartItem,
+} = useDashboardContext();
 
   const Productdata = useSelector(state => {
     return state.ListReducers;
   });
+
   const countdata = useSelector(state => {
-    console.log('state.Reducers', state);
-    return state.Reducers;
+    // console.log('state.Reducers', state);
+    return state?.Reducers;
   });
   let datacount = [...countdata];
 
   //use effect for getproduct list
   useEffect(() => {
-    GetProduct();
+    Productdata.length > 0 ? setLoadinga(false) : GetProduct();
+    console.log('helloinjfhgjfh jdfg fdjg fd');
   }, []);
 
   const closeMenu = () => {
@@ -57,91 +63,89 @@ const DashBoard = props => {
   };
 
   const GetProduct = () => {
+    setLoadinga(true)
     axios.get(`https://fakestoreapi.com/products`).then(response => {
       // setProductlist(response.data);
-
+      setLoadinga(false)
       dispatch(ProductlistItems(response.data));
     });
   };
 
-  const addItem = item => {
+  const addItem = (item, index) => {
     dispatch(addItemtoKart(item));
-    console.log('addddd');
+    dispatch(RemovelistItems(index));
+    Alert.alert('AddToKart Successfully!');
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.innercontainer}>
-        <Provider>
-          <Appbar.Header>
-            <Appbar.Action
-              icon="menu"
-              onPress={() => props.navigation.openDrawer()}
-              size={28}
-              style={{paddingLeft: 3}}
-            />
-            <Appbar.Content title="ApnaKart" subtitle={'India'} />
-            <Appbar.Action icon="magnify" onPress={() => {}} />
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-              }}>
-              <View style={styles.shopingkart}>
-                <Text style={{fontSize: 8, color: 'white', fontWeight: 'bold'}}>
-                  {datacount.length}
-                </Text>
-              </View>
-              <Appbar.Action
-                icon="cart-heart"
-                // iconColor="black"
-                onPress={() => props.navigation.navigate('Addkart')}
-              />
-            </View>
-
-            {/* <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',      
-              }}>
-              <Menu
-                visible={visible}
-                onDismiss={closeMenu}
-                anchor={<Appbar.Action icon={MORE_ICON} onPress={showmenu} />}>
-                <Menu.Item onPress={() => {}} title="Setting" />
-                <Menu.Item onPress={() => {}} title="Search" />
-                <Menu.Item onPress={() => {}} title="Filter" />
-                <Menu.Item onPress={() => {}} title="Help" />
-                <Menu.Item onPress={() => {}} title="FeedBack" />
-                <Menu.Item onPress={() => {}} title="Log Out" />
-              </Menu>
-            </View> */}
-          </Appbar.Header>
-        </Provider>
-      </View>
-      {/* <StatusBar translucent={true} backgroundColor={'transparent'}/> */}
-      <View style={styles.FlatListView}>
-        <FlatList
-          data={Productdata}
-          numColumns={2}
-          keyExtractor={item => item.id}
-          renderItem={({item}) => (
-            <Item onPress={() => addItem(item)} item={item} />
-          )}
-          ListFooterComponentStyle={{paddingVertical: 6}}
+      <Provider>
+        <CustomTopBar
+          title={'ApnaKart'}
+          onDismiss={closeMenu}
+          showmenu={showmenu}
+          datacount={datacount}
+          visible={visible}
+          RighticonPress={() => props.navigation.navigate('Addkart')}
+          LeftIconPress={() => props.navigation.openDrawer()}
+          searchIconPress={() => {}}
+          LeftIcon={'menu'}
+          MenuItem={
+            <>
+              <Menu.Item onPress={() => {}} title="Setting" />
+              <Menu.Item onPress={() => {}} title="Search" />
+              <Menu.Item onPress={() => {}} title="Filter" />
+              <Menu.Item onPress={() => {}} title="Help" />
+              <Menu.Item onPress={() => {}} title="FeedBack" />
+              <Menu.Item onPress={() => {}} title="Log Out" />
+            </>
+          }
         />
-      </View>
 
-      <View style={{marginHorizontal: 40, alignSelf: 'center'}}></View>
+       {Loading ? (
+          <View style={styles.nodataStyle}>
+             <Text style={styles.nodataTextStyle}>Loading...</Text>
+           <ActivityIndicator animating={true} color={'#fc4e03'} size={30}/>
+          </View>
+        ) : null}
+
+
+        <View style={styles.FlatListView}>
+          <FlatList
+            data={Productdata}
+            numColumns={2}
+            keyExtractor={item => item.id}
+            renderItem={({item, index}) => (
+              <Item onPress={() => addItem(item, index)} ProductItemPress={(item)=>{  
+              props.navigation.navigate('ProductInfo')
+              setAddkartItem(true)
+              ProductItemPress(item,index)
+              }} item={item} />
+            )}
+            ListFooterComponent={
+              <View style={styles.ListFooterComponent}></View>
+            }
+          />
+        </View>
+
+        {/* {Productdata.length == 0 ? (
+          <View style={styles.nodataStyle}>
+            <Text style={styles.nodataTextStyle}>No Data Found!</Text>
+          </View>
+        ) : null} */}
+
+        <View style={{marginHorizontal: 40, alignSelf: 'center'}}></View>
+      </Provider>
     </View>
   );
 };
 
 export default DashBoard;
 
-const Item = ({item, onPress}) => {
+const Item = ({item, onPress,ProductItemPress}) => {
+  var price = item.price*81
   return (
-    <View style={styles.main}>
+    <TouchableOpacity onPress={()=>ProductItemPress(item)} style={styles.main}>
       <View>
         <Image
           source={{uri: item.image}}
@@ -151,7 +155,7 @@ const Item = ({item, onPress}) => {
       </View>
 
       <Text style={styles.TittleStyle}>{item.title}</Text>
-      <Text style={styles.PriceStyle}>Rs {item.price * 80}</Text>
+      <Text style={styles.PriceStyle}>Rs {price.toFixed(2)}</Text>
       <CustomButton
         onPress={onPress}
         titleStyle={styles.titleStyle}
@@ -159,7 +163,7 @@ const Item = ({item, onPress}) => {
         purpleStyle
         title="ADD TO CART"
       />
-    </View>
+    </TouchableOpacity>
   );
 };
 

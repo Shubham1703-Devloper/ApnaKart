@@ -1,26 +1,16 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Login from '../../AuthScreens/Login';
-import Addkart from '../../DashboardTab/Dashboard/Addkart';
+import DashBoardNavigator from '../DashBoardNavigator';
 const Stack = createNativeStackNavigator();
 const AuthNavigator = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen
-          name="Login"
-          component={Login}
+      <Stack.Navigator>
+         <Stack.Screen
+          name="DashBoardNavigator"
+          component={DashBoardNavigator}
           options={{headerShown: false}}
         />
-        {/* <Stack.Screen
-          name="DrawerNavigation"
-          component={DrawerNavigation}
-          options={{headerShown: false}}
-        />  */}
-
-      
       </Stack.Navigator>
-    </NavigationContainer>
   );
 };
 

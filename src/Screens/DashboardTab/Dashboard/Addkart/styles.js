@@ -24,20 +24,28 @@ export default styles = StyleSheet.create({
 
   FlatListView:{
     paddingTop:0,
-    paddingBottom:60
+    paddingBottom:60,
+    // alignItems:'center',
+    width:'100%'
   }
 ,
 
+nodataStyle:{
+  justifyContent:'center',
+  alignItems:'center',
+  marginTop:20
+}
+  ,
 
-  
-
-
+  nodataTextStyle:{
+    fontSize:18
+  },
   ///item styles
 
 
   main:{
-    width:'47%',
-    margin:5,
+    width: '45%',
+    margin: 10,
     padding:10,
     borderRadius:10,
     backgroundColor:'white',

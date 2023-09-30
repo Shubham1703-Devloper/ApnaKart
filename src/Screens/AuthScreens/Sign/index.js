@@ -23,7 +23,7 @@ import {
 } from 'react-native-paper';
 import {userLogin} from '../../../Redux/Actions/Actions';
 import { useDispatch } from 'react-redux';
-
+import Icon from 'react-native-vector-icons/MaterialIcons';
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
 const Sign = props => {
@@ -49,22 +49,15 @@ const Sign = props => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.container2}>
+        
+       
       <Provider>
-        <ScrollView style={styles.container1}>
-          <DialogView
-            visible={visible}
-            message={'Congratulations!'}
-            description={'You have Complete successfull Sign Up'}
-            hideDialog={() => {
-              setVisible(false);
-            }}
-            buttontext={'Continue'}
-            back={() => {
-              CreateAccount()
-            }}
-          />
-
-          <View style={styles.container2}>
+      <TouchableOpacity onPress={()=>props.navigation.goBack()} style={styles.arrowbackStyle}>
+        <Icon name={'arrow-back'} size={30} color={'white'}/>
+        </TouchableOpacity>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.container3}>
             <Avatar.Image
               size={80}
               source={{
@@ -101,12 +94,13 @@ const Sign = props => {
 
             <TouchableOpacity
               style={styles.button}
-              onPress={() => showDialog()}>
+              onPress={() => CreateAccount()}>
               <Text style={styles.buttontext}>Create Account</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
       </Provider>
+      </View>
     </View>
   );
 };
@@ -114,36 +108,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  blurcontainer: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: '#e3e2e1',
-    justifyContent: 'center',
-  },
-  container1: {
-    flex: 1,
-    // alignItems: 'center',
-    backgroundColor: '#e3e2e1',
-    // justifyContent: 'center',
-  },
-  container2: {
-    paddingHorizontal: 20,
-    marginHorizontal: 20,
-    marginVertical: 20,
-    paddingVertical: 60,
-    alignItems: 'center',
-    backgroundColor: 'white',
-    width: '90%',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
 
-    elevation: 4,
-    borderRadius: 5,
+  arrowbackStyle:{
+    marginTop:20,
+    position:'absolute',
+    zIndex:1,
+    backgroundColor:'skyblue',
+    borderRadius:100,
+  }
+,
+  container2: {
+    paddingHorizontal: 40,
+    // marginVertical: 20,
+    // marginHorizontal:20,
+    flex:1,
+
+    backgroundColor: 'white',
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.23,
+    // shadowRadius: 2.62,
+
+    // elevation: 4,
+    // borderRadius: 5,
+  },
+
+  container3:{
+   alignItems:'center',
+   paddingVertical: 60,
   },
   logintext: {
     fontSize: 25,
@@ -152,7 +147,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   textinput: {
-    width: '90%',
+    width: '100%',
     marginTop: 20,
   },
   forgottext: {
@@ -162,13 +157,13 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 50,
-    width: '90%',
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'skyblue',
     borderRadius: 5,
     marginTop: 80,
-    marginBottom: 20,
+    marginBottom: 56,
   },
   buttontext: {
     color: 'white',

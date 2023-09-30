@@ -20,15 +20,12 @@ interface Props {
 
   return (
     <View>
-      {/* <DateTimePickerModal
+      <DateTimePickerModal
         isVisible={isVisible}
         mode={mode}
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
-      /> */}
-
-     
-      
+      />
      </View>
   );
 };
