@@ -34,13 +34,12 @@ const Account = props => {
     onToggleSwitch,
     isSwitchOn, setIsSwitchOn
   } = useDashboardContext();
-  const {loginuser} = useAuthContext();
   const [userdata, setuserdata] = useState({});
 
   
-  useEffect(() => {
-      onToggleSwitch();
-  }, [isSwitchOn]);
+  // useEffect(() => {
+  //     onToggleSwitch();
+  // }, [isSwitchOn]);
 
 
   const startlogin = async () => {
@@ -88,7 +87,7 @@ const Account = props => {
           <TouchableOpacity>
             <Switch
               value={userdata?.switch ? userdata?.switch : isSwitchOn}
-              onChange={() => setIsSwitchOn(!isSwitchOn)}
+              onChange={() => onToggleSwitch() }
             />
           </TouchableOpacity>
         </View>

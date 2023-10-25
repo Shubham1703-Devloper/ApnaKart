@@ -8,9 +8,9 @@ export function Context({children}) {
     <>
       {/* User Account Context Provider */}
       <AuthContextProvider>
-        <AccountContextProvider>
-          <DashboardContextProvider>{children}</DashboardContextProvider>
-        </AccountContextProvider>
+        <DashboardContextProvider>
+          <AccountContextProvider>{children}</AccountContextProvider>
+        </DashboardContextProvider>
       </AuthContextProvider>
     </>
   );

@@ -20,9 +20,10 @@ export function DashboardContextProvider({children}) {
   const [Listdata, setListdata] = useState([]);
   const [AddkartItem, setAddkartItem] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [loginuser, setloginuser] = useState({});
+  const [valuechange, setvaluechange] = useState('');
   const [isSwitchOn, setIsSwitchOn] = useState(false);
-
+  const [smartlogin, setsmartlogin] = useState(false);
+  const [fingerprintdata, setfingerprintdata] = useState({"Passward": "", "email": "", "switch": false});
 
 
   const rnBiometrics = new ReactNativeBiometrics();
@@ -55,20 +56,34 @@ export function DashboardContextProvider({children}) {
   });
 
   const onToggleSwitch = async () => {
-    console.log("ontogglswitch=====>", isSwitchOn );
+    setIsSwitchOn(!isSwitchOn)
     if (isSwitchOn) {
       await AsyncStorage.setItem(
         '@usercridencial',
-        JSON.stringify({...loginuserdata, switch: isSwitchOn}),
+        JSON.stringify({...loginuserdata, switch: false}),
       );
     } else {
       await AsyncStorage.setItem(
         '@usercridencial',
-        JSON.stringify({...loginuserdata, switch: isSwitchOn}),
+        JSON.stringify({...loginuserdata, switch: true}),
       );
     }
   };
 
+
+  useEffect(()=>{
+    loginstart()
+  },[isSwitchOn])
+
+  const loginstart=async()=>{
+    rnBiometrics.isSensorAvailable().then(resultObject => {
+      const {available, biometryType} = resultObject;
+      setsmartlogin(available)
+       console.log('hllllll jfgjf  ======>',available);
+    });
+    loginuser = JSON.parse(await AsyncStorage.getItem('@usercridencial'));
+    setfingerprintdata(loginuser)
+   }
 
 
   const contextPayload = useMemo(
@@ -87,6 +102,9 @@ export function DashboardContextProvider({children}) {
       visible,
       setVisible,
       isSwitchOn, setIsSwitchOn,
+      valuechange, setvaluechange,
+      smartlogin, setsmartlogin,
+      fingerprintdata, setfingerprintdata,
 
       //API calls
 
@@ -115,6 +133,9 @@ export function DashboardContextProvider({children}) {
       visible,
       setVisible,
       isSwitchOn, setIsSwitchOn,
+      valuechange, setvaluechange,
+      smartlogin, setsmartlogin,
+      fingerprintdata, setfingerprintdata,
 
       //API calls
 
