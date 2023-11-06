@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import {useSelector} from 'react-redux';
 import ReactNativeBiometrics, {BiometryTypes} from 'react-native-biometrics';
+import { StackActions } from '@react-navigation/native';
 
 export const DashboardContext = createContext({});
 
@@ -20,12 +21,22 @@ export function DashboardContextProvider({children}) {
   const [Listdata, setListdata] = useState([]);
   const [AddkartItem, setAddkartItem] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [loginuser, setloginuser] = useState({});
+  const [valuechange, setvaluechange] = useState('');
   const [isSwitchOn, setIsSwitchOn] = useState(false);
-
-
-
+  const [smartlogin, setsmartlogin] = useState(false);
+  const [fingerprintdata, setfingerprintdata] = useState({"Passward": "", "email": "", "switch": false});
+  const [userdata, setuserdata] = useState({});
+  const [loginuser, setloginuser] = useState({});
   const rnBiometrics = new ReactNativeBiometrics();
+
+  const loginuserdata = useSelector(state => {
+    return state.LoginUserdataReducers;
+  });
+
+
+useEffect(() => {
+  startlogin();
+}, []);
 
 
   const ProductItemPress = (item, index) => {
@@ -50,25 +61,61 @@ export function DashboardContextProvider({children}) {
 
 
 
-  const loginuserdata = useSelector(state => {
-    return state.LoginUserdataReducers;
-  });
-
   const onToggleSwitch = async () => {
-    console.log("ontogglswitch=====>", isSwitchOn );
+    setIsSwitchOn(!isSwitchOn)
     if (isSwitchOn) {
       await AsyncStorage.setItem(
         '@usercridencial',
-        JSON.stringify({...loginuserdata, switch: isSwitchOn}),
+        JSON.stringify({...loginuserdata, switch: false}),
       );
     } else {
       await AsyncStorage.setItem(
         '@usercridencial',
-        JSON.stringify({...loginuserdata, switch: isSwitchOn}),
+        JSON.stringify({...loginuserdata, switch: true}),
       );
     }
   };
 
+
+
+  const loginstart=async()=>{
+    var loginuser = JSON.parse(await AsyncStorage.getItem('@usercridencial'));
+    setfingerprintdata(loginuser)
+    setIsSwitchOn(loginuser?.switch)
+    console.log('hllll======>',loginuser);
+    rnBiometrics.isSensorAvailable().then(resultObject => {
+      const {available, biometryType} = resultObject;
+      setsmartlogin(available)
+    });
+   }
+
+
+   const startlogin = async () => {
+    var data;
+    var loginmember;
+    data = JSON.parse(await AsyncStorage.getItem('@usercridencial'));
+    loginmember = JSON.parse(await AsyncStorage.getItem('loginmember'));
+    setuserdata(data);
+    setloginuser(loginmember);
+  };
+
+
+  const loginOut=async(props)=>{
+    await AsyncStorage.setItem(
+      'logout',
+      JSON.stringify(true));
+      // props.navigation.navigate(StackActions.popToTop());
+      props.navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }]
+   })
+   }
+
+   const checklogout=async()=>{
+    await AsyncStorage.setItem(
+      'logout',
+      JSON.stringify(false));
+   }
 
 
   const contextPayload = useMemo(
@@ -87,7 +134,11 @@ export function DashboardContextProvider({children}) {
       visible,
       setVisible,
       isSwitchOn, setIsSwitchOn,
-
+      valuechange, setvaluechange,
+      smartlogin, setsmartlogin,
+      fingerprintdata, setfingerprintdata,
+      userdata, setuserdata,
+      loginuser, setloginuser,
       //API calls
 
       // Form Initial States & Validations
@@ -99,6 +150,9 @@ export function DashboardContextProvider({children}) {
       datacount,
       countdata,
       onToggleSwitch,
+      loginstart,
+      loginOut,
+      checklogout
     }),
     [
       // States
@@ -115,6 +169,11 @@ export function DashboardContextProvider({children}) {
       visible,
       setVisible,
       isSwitchOn, setIsSwitchOn,
+      valuechange, setvaluechange,
+      smartlogin, setsmartlogin,
+      fingerprintdata, setfingerprintdata,
+      userdata, setuserdata,
+      loginuser, setloginuser,
 
       //API calls
 
@@ -127,6 +186,9 @@ export function DashboardContextProvider({children}) {
       datacount,
       countdata,
       onToggleSwitch,
+      loginstart,
+      loginOut,
+      checklogout
     ],
   );
 

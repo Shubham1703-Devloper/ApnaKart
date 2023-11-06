@@ -18,9 +18,8 @@ import {
 import {ListReducers} from '../../../../Redux/reducer/Reducers';
 import CustomTopBar from '../../../../Components/CustomTopBar';
 import {Menu, Provider, Switch} from 'react-native-paper';
-import {useDashboardContext} from '../../../../Context/DashboardContext';
 import styles from './styles';
-import {useAuthContext} from '../../../../Context/AuthContext';
+import { useDashboardContext } from '../../../../Context/DashboardContext';
 
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
@@ -32,26 +31,28 @@ const Account = props => {
     datacount,
     visible,
     onToggleSwitch,
-    isSwitchOn, setIsSwitchOn
+    isSwitchOn, setIsSwitchOn,loginstart
   } = useDashboardContext();
-  const {loginuser} = useAuthContext();
-  const [userdata, setuserdata] = useState({});
-
-  
-  useEffect(() => {
-      onToggleSwitch();
-  }, [isSwitchOn]);
 
 
-  const startlogin = async () => {
-    var loginuser;
-    loginuser = JSON.parse(await AsyncStorage.getItem('@usercridencial'));
-    setuserdata(loginuser);
-  };
+  const [loginuser, setloginuser] = useState({});
 
   useEffect(()=>{
-    startlogin();
+    startlogin()
   },[])
+  
+  useEffect(()=>{
+    loginstart()
+  },[isSwitchOn])
+  
+  const startlogin = async () => {
+    var loginmember;
+    loginmember = JSON.parse(await AsyncStorage.getItem('loginmember'));
+    setloginuser(loginmember);
+    console.log('loginuser====',loginmember);
+  };
+
+
 
   return (
     <View style={styles.container}>
@@ -87,8 +88,8 @@ const Account = props => {
           <Text style={styles.SimilarType}>Smart Login Enable</Text>
           <TouchableOpacity>
             <Switch
-              value={userdata?.switch ? userdata?.switch : isSwitchOn}
-              onChange={() => setIsSwitchOn(!isSwitchOn)}
+              value={isSwitchOn}
+              onChange={() => onToggleSwitch() }
             />
           </TouchableOpacity>
         </View>

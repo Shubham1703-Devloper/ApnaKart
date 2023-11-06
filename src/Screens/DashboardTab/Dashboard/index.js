@@ -21,6 +21,8 @@ import {
 } from '../../../Redux/Actions/Actions';
 import CustomTopBar from '../../../Components/CustomTopBar';
 import { useDashboardContext } from '../../../Context/DashboardContext';
+import CustomModal from '../../../Components/CustomModal';
+import { useAuthContext } from '../../../Context/AuthContext';
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
 const screenWidth = Dimensions.get('screen').width;
@@ -34,12 +36,15 @@ const DashBoard = props => {
    const [Loading, setLoadinga] = React.useState(true);
   const dispatch = useDispatch();
   const {ProductItemPress, Listdata,
-    setListdata,setAddkartItem,
+    setListdata,setAddkartItem,checklogout
 } = useDashboardContext();
+
+const {modalVisible, setModalVisible} =  useAuthContext()
 
   const Productdata = useSelector(state => {
     return state.ListReducers;
   });
+
 
   const countdata = useSelector(state => {
     // console.log('state.Reducers', state);
@@ -49,6 +54,7 @@ const DashBoard = props => {
 
   //use effect for getproduct list
   useEffect(() => {
+    checklogout()
     Productdata.length > 0 ? setLoadinga(false) : GetProduct();
     console.log('helloinjfhgjfh jdfg fdjg fd');
   }, []);
@@ -60,6 +66,9 @@ const DashBoard = props => {
   const showmenu = () => {
     setVisible(true);
     console.log('helloo');
+    setTimeout(() => {
+      closeMenu()
+    }, 3000);
   };
 
   const GetProduct = () => {
@@ -88,12 +97,12 @@ const DashBoard = props => {
           visible={visible}
           RighticonPress={() => props.navigation.navigate('Addkart')}
           LeftIconPress={() => props.navigation.openDrawer()}
-          searchIconPress={() => {}}
+          searchIconPress={() => {setModalVisible(true)}}
           LeftIcon={'menu'}
           MenuItem={
             <>
               <Menu.Item onPress={() => {}} title="Setting" />
-              <Menu.Item onPress={() => {}} title="Search" />
+              <Menu.Item onPress={() => {setModalVisible(true)}} title="Search" />
               <Menu.Item onPress={() => {}} title="Filter" />
               <Menu.Item onPress={() => {}} title="Help" />
               <Menu.Item onPress={() => {}} title="FeedBack" />
@@ -134,6 +143,8 @@ const DashBoard = props => {
           </View>
         ) : null} */}
 
+       <CustomModal
+       />
         <View style={{marginHorizontal: 40, alignSelf: 'center'}}></View>
       </Provider>
     </View>

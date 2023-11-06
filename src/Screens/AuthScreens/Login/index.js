@@ -24,41 +24,53 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import ReactNativeBiometrics, {BiometryTypes} from 'react-native-biometrics';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {log} from 'react-native-reanimated';
 import {userLogindata} from '../../../Redux/Actions/Actions';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDashboardContext} from '../../../Context/DashboardContext';
-import {useAuthContext} from '../../../Context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuthContext } from '../../../Context/AuthContext';
+
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
 const Login = props => {
   const [hidePass, setHidePass] = useState(true);
   const [Passward, setPassward] = React.useState('');
   const [visible, setVisible] = React.useState(false);
-  const [smartlogin, setsmartlogin] = useState(false);
-  const [userdata, setuserdata] = useState({});
+
   const [email, setemail] = useState('');
+  const [login, setlogin] = useState(true);
 
   const showDialog = () => setVisible(true);
 
-
   const rnBiometrics = new ReactNativeBiometrics();
   const dispatch = useDispatch();
-  const {isSwitchOn} = useDashboardContext();
+  const {
+    isSwitchOn,
+    smartlogin,
+    fingerprintdata,
+    userdata,
+    setuserdata,
+    loginuser,
+    setloginuser,
+    loginstart,
+    
+  } = useDashboardContext();
 
+  const {logout,setLogout} = useAuthContext()
 
- useEffect(()=>{
-  // loginuser = JSON.parse(await AsyncStorage.getItem('@usercridencial'));
-  loginstart()
- },[isSwitchOn])
+  useEffect(() => {
+    loginstart();
+    checklogin()
+  }, []);
 
-
- const loginstart=async()=>{
-  
-  loginuser = JSON.parse(await AsyncStorage.getItem('@usercridencial'));
-  console.log('hllllll jfgjf  ======>',loginuser);
- }
- 
+  const checklogin = async () => {
+    var data;
+    data = JSON.parse(await AsyncStorage.getItem('logout'));
+    // console.log('data===',data);
+    // if (!data) {
+    //   props.navigation.navigate('DrawerNavigation');
+    // }
+    setLogout(data);
+  };
 
   const LoginwithFingerprint = async () => {
     rnBiometrics.isSensorAvailable().then(resultObject => {
@@ -114,10 +126,11 @@ const Login = props => {
     }
   };
 
+  console.log('isSwitchOn in login screen', fingerprintdata, smartlogin);
+
   const logindata = useSelector(state => {
     return state.LoginReducers;
   });
-
 
   const LoginAccount = () => {
     if (email == '' || Passward == '') {
@@ -127,6 +140,10 @@ const Login = props => {
         if (element.email == email && element.Passward == Passward) {
           dispatch(userLogindata({email: email, Passward: Passward}));
           Alert.alert('Congratulations You have Login Successfully!');
+          AsyncStorage.setItem(
+            'loginmember',
+            JSON.stringify({email: email, Passward: Passward}),
+          );
           props.navigation.navigate('DrawerNavigation');
         } else {
           Alert.alert('Please Enter Correct Email and Password!');
@@ -135,97 +152,124 @@ const Login = props => {
     }
   };
 
+  //google Login
 
+  // _signIn = async () => {
+  //   try {
+  //     await GoogleSignin.hasPlayServices();
+  //     const {accessToken, idToken} = await GoogleSignin.signIn();
+  //     setloggedIn(true);
+  //   } catch (error) {
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //       // user cancelled the login flow
+  //       alert('Cancel');
+  //     } else if (error.code === statusCodes.IN_PROGRESS) {
+  //       alert('Signin in progress');
+  //       // operation (f.e. sign in) is in progress already
+  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+  //       alert('PLAY_SERVICES_NOT_AVAILABLE');
+  //       // play services not available or outdated
+  //     } else {
+  //       // some other error happened
+  //     }
+  //   }
+  // };
 
-  const startlogin = async () => {
-    var loginuser;
-    rnBiometrics.isSensorAvailable().then(resultObject => {
-      const {available, biometryType} = resultObject;
-      setsmartlogin(available);
-    });
-    loginuser = JSON.parse(await AsyncStorage.getItem('@usercridencial'));
-    setuserdata(loginuser);
-  };
-
-
+  // signOut = async () => {
+  //   try {
+  //     await GoogleSignin.revokeAccess();
+  //     await GoogleSignin.signOut();
+  //     setloggedIn(false);
+  //     setuserInfo([]);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   return (
     <View style={styles.container}>
       <View style={styles.container2}>
-      <Provider>
-        <ScrollView showsVerticalScrollIndicator={false} style={styles.container1}>
-          <View style={styles.container3}>
-            <Avatar.Image
-              size={80}
-              source={{
-                uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAmFw0jctbuxfPI2kScpcU4ZRBJZjx6HR-3w&usqp=CAU',
-              }}
-            />
-            <Text style={styles.logintext}>Login</Text>
+        <Provider>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={styles.container1}>
+            <View style={styles.container3}>
+              <Avatar.Image
+                size={80}
+                source={{
+                  uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAmFw0jctbuxfPI2kScpcU4ZRBJZjx6HR-3w&usqp=CAU',
+                }}
+              />
+              <Text style={styles.logintext}>Login</Text>
 
-            <TextInput
-              mode="outlined"
-              label="Email or Phone Number"
-              placeholder="Enter Email or Phone"
-              maxLength={25}
-              style={styles.textinput}
-              onChangeText={email => setemail(email)}
-            />
+              <TextInput
+                mode="outlined"
+                label="Email or Phone Number"
+                placeholder="Enter Email or Phone"
+                maxLength={25}
+                style={styles.textinput}
+                onChangeText={email => setemail(email)}
+              />
 
-            <TextInput
-              mode="outlined"
-              placeholder="Enter Passward"
-              label="Enter Passward"
-              secureTextEntry={hidePass ? true : false}
-              right={
-                <TextInput.Icon
-                  icon={!hidePass ? 'eye' : 'eye-off'}
-                  onPress={() => setHidePass(!hidePass)}
-                />
-              }
-              style={styles.textinput}
-              value={Passward}
-              onChangeText={Passward => setPassward(Passward)}
-            />
+              <TextInput
+                mode="outlined"
+                placeholder="Enter Passward"
+                label="Enter Passward"
+                secureTextEntry={hidePass ? true : false}
+                right={
+                  <TextInput.Icon
+                    icon={!hidePass ? 'eye' : 'eye-off'}
+                    onPress={() => setHidePass(!hidePass)}
+                  />
+                }
+                style={styles.textinput}
+                value={Passward}
+                onChangeText={Passward => setPassward(Passward)}
+              />
 
-            <TouchableOpacity onPress={() => {}}>
-              {/* props.navigation.navigate('Forgotpassward') */}
-              <Text style={styles.forgottext}>Forgot Your Passward</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() =>  LoginAccount()}>
-              <Text style={styles.buttontext}>Login</Text>
-            </TouchableOpacity>
-            <View style={smartlogin && userdata?.switch ?styles.SignView: styles.marginbootom}>
-              <Text>Don`t have an Account</Text>
-              <TouchableOpacity
-                style={styles.Signbutton}
-                onPress={() => props.navigation.navigate('Sign')}>
-                {/* props.navigation.navigate('Signpage') */}
-                <Text style={styles.text}> Sign</Text>
+              <TouchableOpacity onPress={() => {}}>
+                {/* props.navigation.navigate('Forgotpassward') */}
+                <Text style={styles.forgottext}>Forgot Your Passward</Text>
               </TouchableOpacity>
-            </View>
 
-            
-     { smartlogin ? <TouchableOpacity
-      style={[styles.button, styles.fingerprint]}
-      onPress={() => LoginwithFingerprint()}>
-      <Text style={styles.buttontext1}>Login with </Text>
-      <Icon name={'finger-print-sharp'} size={28} />
-    </TouchableOpacity>:null}
-  
-    
-  
-  
-    
-      
-             
-           
-          </View>
-        </ScrollView>
-      </Provider>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => LoginAccount()}>
+                <Text style={styles.buttontext}>Login</Text>
+              </TouchableOpacity>
+              <View
+                style={
+                  smartlogin && userdata?.switch
+                    ? styles.SignView
+                    : styles.marginbootom
+                }>
+                <Text>Don`t have an Account</Text>
+                <TouchableOpacity
+                  style={styles.Signbutton}
+                  onPress={() => props.navigation.navigate('Sign')}>
+                  {/* props.navigation.navigate('Signpage') */}
+                  <Text style={styles.text}> Sign</Text>
+                </TouchableOpacity>
+              </View>
+              {/* isSwitchOn &&  */}
+
+              {fingerprintdata?.switch && smartlogin ? (
+                <TouchableOpacity
+                  style={[styles.button, styles.fingerprint]}
+                  onPress={() => LoginwithFingerprint()}>
+                  <Text style={styles.buttontext1}>Login with </Text>
+                  <Icon name={'finger-print-sharp'} size={28} />
+                </TouchableOpacity>
+              ) : null}
+              {/* <GoogleSigninButton
+                  style={styles.googleButton}
+                  size={GoogleSigninButton.Size.Wide}
+                  color={GoogleSigninButton.Color.Dark}
+                  // onPress={this._signIn}
+                />  */}
+            </View>
+          </ScrollView>
+        </Provider>
       </View>
     </View>
   );
@@ -240,33 +284,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#e3e2e1',
     justifyContent: 'center',
   },
-
-  container1: {
-
-  },
-
   container2: {
     paddingHorizontal: 20,
-    // marginVertical: 20,
-    // marginHorizontal:20,
-    flex:1,
-
+    flex: 1,
     backgroundColor: 'white',
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 2,
-    // },
-    // shadowOpacity: 0.23,
-    // shadowRadius: 2.62,
-
-    // elevation: 4,
-    // borderRadius: 5,
   },
 
-  container3:{
-   alignItems:'center',
-   paddingTop:60
+  container3: {
+    alignItems: 'center',
+    paddingTop: 60,
   },
   logintext: {
     fontSize: 25,
@@ -293,6 +319,12 @@ const styles = StyleSheet.create({
     marginTop: 80,
     // marginBottom: 20,
   },
+  googleButton: {
+    height: 50,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   buttontext: {
     color: 'white',
     fontSize: 20,
@@ -308,7 +340,7 @@ const styles = StyleSheet.create({
   },
   SignView: {
     flexDirection: 'row',
-    marginTop:5,
+    marginTop: 5,
   },
   text: {
     color: 'skyblue',
@@ -330,11 +362,11 @@ const styles = StyleSheet.create({
     marginBottom: 56,
   },
 
-  marginbootom:{
+  marginbootom: {
     marginBottom: 56,
-    marginTop:5,
+    marginTop: 5,
     flexDirection: 'row',
-  }
+  },
 });
 
 export default Login;

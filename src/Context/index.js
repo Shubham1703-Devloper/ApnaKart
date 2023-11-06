@@ -1,16 +1,15 @@
 import React from 'react';
-import {AccountContextProvider} from './AccountContext';
 import {DashboardContextProvider} from './DashboardContext';
 import {AuthContextProvider} from './AuthContext';
+import { AccountContextProvider } from './AccountContext';
 
 export function Context({children}) {
   return (
     <>
-      {/* User Account Context Provider */}
       <AuthContextProvider>
-        <AccountContextProvider>
-          <DashboardContextProvider>{children}</DashboardContextProvider>
-        </AccountContextProvider>
+        <DashboardContextProvider>
+          <AccountContextProvider>{children}</AccountContextProvider>
+        </DashboardContextProvider>
       </AuthContextProvider>
     </>
   );

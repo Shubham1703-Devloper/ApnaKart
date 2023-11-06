@@ -8,10 +8,21 @@ import Sign from '../AuthScreens/Sign';
 import DashBoardNavigator from './DashBoardNavigator';
 import ProductInfo from '../DashboardTab/Dashboard/ProductInfo';
 import Account from '../DashboardTab/Account/Account';
+import { useAuthContext } from '../../Context/AuthContext';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Splash from '../AuthScreens/Splash';
 const Stack = createNativeStackNavigator();
 const Auth = () => {
+  // const {logout} = useAuthContext()
+
   return (
-      <Stack.Navigator initialRouteName='Login'>
+      <Stack.Navigator initialRouteName={'Splash'}>
+        <Stack.Screen
+          name="Splash"
+          component={Splash}
+          options={{headerShown: false}}
+        /> 
          <Stack.Screen
           name="Login"
           component={Login}
