@@ -1,4 +1,4 @@
-import React, {Children, useRef} from 'react';
+import React, {Children, useEffect, useRef} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -14,7 +14,10 @@ import {Provider} from 'react-redux';
 import {mystore} from './src/Redux/store/Store';
 import {NavigationContainer} from '@react-navigation/native';
 import Context from './src/Context';
+import { useAuthContext } from './src/Context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default App = () => {
+
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <Provider store={mystore}>

@@ -31,7 +31,10 @@ const CustomSidebar = (props) => {
     "https://raw.githubusercontent.com/AboutReact/sampleresource/master/";
   const proileImage = "react_logo.png";
 
-  const {loginuser,setloginuser,getdataformlocal} = useAuthContext();
+  const {
+    isSwitchOn,smartlogin,fingerprintdata,
+    loginuser
+  } = useDashboardContext();
 
 
   return (

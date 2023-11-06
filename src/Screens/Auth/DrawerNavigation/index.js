@@ -27,6 +27,7 @@ import { useDashboardContext } from '../../../Context/DashboardContext';
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigation = props => {
+  const {loginOut} = useDashboardContext()
 
   return (
     <Drawer.Navigator
@@ -136,7 +137,7 @@ const DrawerNavigation = props => {
       <Drawer.Screen
         name="Log Out"
         component={() => {
-            props.navigation.dispatch(StackActions.popToTop());
+            loginOut(props)
         }}
         options={{
           title: 'Log Out',

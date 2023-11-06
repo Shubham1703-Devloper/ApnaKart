@@ -26,13 +26,8 @@ import ReactNativeBiometrics, {BiometryTypes} from 'react-native-biometrics';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {userLogindata} from '../../../Redux/Actions/Actions';
 import {useDashboardContext} from '../../../Context/DashboardContext';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
-import { LoginwithFingerprint } from '../../../LoginwithFingerprint/LoginwithFingerprint';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuthContext } from '../../../Context/AuthContext';
 
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
@@ -41,24 +36,101 @@ const Login = props => {
   const [Passward, setPassward] = React.useState('');
   const [visible, setVisible] = React.useState(false);
 
-  const [userdata, setuserdata] = useState({});
   const [email, setemail] = useState('');
   const [login, setlogin] = useState(true);
 
   const showDialog = () => setVisible(true);
 
-
   const rnBiometrics = new ReactNativeBiometrics();
   const dispatch = useDispatch();
-  const {isSwitchOn,smartlogin,fingerprintdata} = useDashboardContext();
+  const {
+    isSwitchOn,
+    smartlogin,
+    fingerprintdata,
+    userdata,
+    setuserdata,
+    loginuser,
+    setloginuser,
+    loginstart,
+    
+  } = useDashboardContext();
 
+  const {logout,setLogout} = useAuthContext()
 
-console.log("isSwitchOn in login screen", fingerprintdata, smartlogin);
+  useEffect(() => {
+    loginstart();
+    checklogin()
+  }, []);
+
+  const checklogin = async () => {
+    var data;
+    data = JSON.parse(await AsyncStorage.getItem('logout'));
+    // console.log('data===',data);
+    // if (!data) {
+    //   props.navigation.navigate('DrawerNavigation');
+    // }
+    setLogout(data);
+  };
+
+  const LoginwithFingerprint = async () => {
+    rnBiometrics.isSensorAvailable().then(resultObject => {
+      const {available, biometryType} = resultObject;
+
+      if (available && biometryType === BiometryTypes.TouchID) {
+        console.log('TouchID is supported');
+      } else if (available && biometryType === BiometryTypes.FaceID) {
+        console.log('FaceID is supported');
+      } else if (available && biometryType === BiometryTypes.Biometrics) {
+        console.log('Biometrics is supported');
+      } else {
+        console.log('Biometrics not supported');
+      }
+    });
+
+    if (userdata != null) {
+      rnBiometrics.createKeys().then(resultObject => {
+        const {publicKey} = resultObject;
+        console.log(publicKey);
+        // sendPublicKeyToServer(publicKey)
+      });
+
+      rnBiometrics.biometricKeysExist().then(resultObject => {
+        const {keysExist} = resultObject;
+
+        if (keysExist) {
+          console.log('Keys exist');
+        } else {
+          console.log('Keys do not exist or were deleted');
+        }
+      });
+
+      let epochTimeSeconds = Math.round(new Date().getTime() / 1000).toString();
+      let payload = epochTimeSeconds + 'some message';
+
+      rnBiometrics
+        .createSignature({
+          promptMessage: 'Login with FingerPrint',
+          payload: payload,
+        })
+        .then(resultObject => {
+          const {success, signature} = resultObject;
+
+          if (success) {
+            console.log(signature);
+            props.navigation.navigate('DrawerNavigation');
+            // verifySignatureWithServer(signature, payload)
+          }
+        });
+    } else {
+      Alert.alert('Please Login with userName & Password');
+    }
+  };
+
+  console.log('isSwitchOn in login screen', fingerprintdata, smartlogin);
 
   const logindata = useSelector(state => {
     return state.LoginReducers;
   });
-
 
   const LoginAccount = () => {
     if (email == '' || Passward == '') {
@@ -68,6 +140,10 @@ console.log("isSwitchOn in login screen", fingerprintdata, smartlogin);
         if (element.email == email && element.Passward == Passward) {
           dispatch(userLogindata({email: email, Passward: Passward}));
           Alert.alert('Congratulations You have Login Successfully!');
+          AsyncStorage.setItem(
+            'loginmember',
+            JSON.stringify({email: email, Passward: Passward}),
+          );
           props.navigation.navigate('DrawerNavigation');
         } else {
           Alert.alert('Please Enter Correct Email and Password!');
@@ -76,8 +152,7 @@ console.log("isSwitchOn in login screen", fingerprintdata, smartlogin);
     }
   };
 
-
-//google Login
+  //google Login
 
   // _signIn = async () => {
   //   try {
@@ -110,7 +185,6 @@ console.log("isSwitchOn in login screen", fingerprintdata, smartlogin);
   //     console.error(error);
   //   }
   // };
-
 
   return (
     <View style={styles.container}>
@@ -187,15 +261,14 @@ console.log("isSwitchOn in login screen", fingerprintdata, smartlogin);
                   <Icon name={'finger-print-sharp'} size={28} />
                 </TouchableOpacity>
               ) : null}
-                <GoogleSigninButton
+              {/* <GoogleSigninButton
                   style={styles.googleButton}
                   size={GoogleSigninButton.Size.Wide}
                   color={GoogleSigninButton.Color.Dark}
                   // onPress={this._signIn}
-                /> 
+                />  */}
             </View>
           </ScrollView>
-          {/* <Pushcontroller/> */}
         </Provider>
       </View>
     </View>
@@ -213,13 +286,13 @@ const styles = StyleSheet.create({
   },
   container2: {
     paddingHorizontal: 20,
-    flex:1,
+    flex: 1,
     backgroundColor: 'white',
   },
 
-  container3:{
-   alignItems:'center',
-   paddingTop:60
+  container3: {
+    alignItems: 'center',
+    paddingTop: 60,
   },
   logintext: {
     fontSize: 25,
@@ -246,7 +319,7 @@ const styles = StyleSheet.create({
     marginTop: 80,
     // marginBottom: 20,
   },
-  googleButton:{
+  googleButton: {
     height: 50,
     width: '100%',
     justifyContent: 'center',
@@ -267,7 +340,7 @@ const styles = StyleSheet.create({
   },
   SignView: {
     flexDirection: 'row',
-    marginTop:5,
+    marginTop: 5,
   },
   text: {
     color: 'skyblue',
@@ -289,11 +362,11 @@ const styles = StyleSheet.create({
     marginBottom: 56,
   },
 
-  marginbootom:{
+  marginbootom: {
     marginBottom: 56,
-    marginTop:5,
+    marginTop: 5,
     flexDirection: 'row',
-  }
+  },
 });
 
 export default Login;

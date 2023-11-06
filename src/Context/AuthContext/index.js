@@ -11,16 +11,35 @@ import React, {
 import {useSelector} from 'react-redux';
 import {useDashboardContext} from '../DashboardContext';
 import { log } from 'react-native-reanimated';
-
+import ReactNativeBiometrics, {BiometryTypes} from 'react-native-biometrics';
 export const AuthContext = createContext({});
 
 export function AuthContextProvider({children}) {
+  const rnBiometrics = new ReactNativeBiometrics();
+
   const [isFindMoreAnalytics, setIsFindMoreAnalytics] = useState(false);
-  const [loginuser, setloginuser] = useState({});
   const {isSwitchOn} = useDashboardContext();
+  const [smartlogin, setsmartlogin] = useState(false);
+  const [fingerprintdata, setfingerprintdata] = useState({"Passward": "", "email": "", "switch": false});
+  const [userdata, setuserdata] = useState({});
+  const [loginuser, setloginuser] = useState({});
+  const [logout, setLogout] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false);
 
   const getdataformlocal = async () => {
  
+  };
+
+
+  useEffect(()=>{
+    checklogin()
+  },[])
+
+   const checklogin = async () => {
+    var data;
+    data = JSON.parse(await AsyncStorage.getItem('logout'));
+    console.log('authdata===',data);
+    setLogout(data);
   };
 
   const contextPayload = useMemo(
@@ -30,6 +49,10 @@ export function AuthContextProvider({children}) {
       setIsFindMoreAnalytics,
       loginuser,
       setloginuser,
+      fingerprintdata, setfingerprintdata,smartlogin, setsmartlogin,
+      loginuser, setloginuser,userdata, setuserdata,
+      logout, setLogout,
+      modalVisible, setModalVisible,
 
       //API calls
 
@@ -37,6 +60,7 @@ export function AuthContextProvider({children}) {
 
       //functions
       getdataformlocal,
+      checklogin
     }),
     [
       // States
@@ -44,6 +68,10 @@ export function AuthContextProvider({children}) {
       setIsFindMoreAnalytics,
       loginuser,
       setloginuser,
+      fingerprintdata, setfingerprintdata,smartlogin, setsmartlogin,
+      loginuser, setloginuser,userdata, setuserdata,
+      logout, setLogout,
+      modalVisible, setModalVisible,
 
       //API calls
 
@@ -51,6 +79,7 @@ export function AuthContextProvider({children}) {
 
       //functions
       getdataformlocal,
+      checklogin
     ],
   );
 

@@ -1,10 +1,18 @@
+import { Alert } from 'react-native';
 import ReactNativeBiometrics, {BiometryTypes} from 'react-native-biometrics';
+import { useDashboardContext } from '../Context/DashboardContext';
 const rnBiometrics = new ReactNativeBiometrics();
-const {biometryType} = await rnBiometrics.isSensorAvailable();
+// const {biometryType} = await rnBiometrics.isSensorAvailable();
 
 //fingerprint login
 
 export const LoginwithFingerprint = async () => {
+
+    const {
+        isSwitchOn,smartlogin,fingerprintdata,
+        userdata, setuserdata
+      } = useDashboardContext();
+
   rnBiometrics.isSensorAvailable().then(resultObject => {
     const {available, biometryType} = resultObject;
 
