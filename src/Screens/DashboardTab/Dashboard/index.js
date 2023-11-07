@@ -1,7 +1,7 @@
-
 import React, {PureComponent, useEffect, useState} from 'react';
 import {
   Alert,
+  BackHandler,
   FlatList,
   Image,
   StatusBar,
@@ -11,7 +11,13 @@ import {
 import {View, Text, Dimensions, TouchableHighlight} from 'react-native';
 import styles from './styles';
 import CustomButton from '../../../Components/Button';
-import {ActivityIndicator, Appbar, MD2Colors, Menu, Provider} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Appbar,
+  MD2Colors,
+  Menu,
+  Provider,
+} from 'react-native-paper';
 import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -20,9 +26,10 @@ import {
   addItemtoKart,
 } from '../../../Redux/Actions/Actions';
 import CustomTopBar from '../../../Components/CustomTopBar';
-import { useDashboardContext } from '../../../Context/DashboardContext';
+import {useDashboardContext} from '../../../Context/DashboardContext';
 import CustomModal from '../../../Components/CustomModal';
-import { useAuthContext } from '../../../Context/AuthContext';
+import {useAuthContext} from '../../../Context/AuthContext';
+import {StackActions, useFocusEffect, useRoute} from '@react-navigation/native';
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
 const screenWidth = Dimensions.get('screen').width;
@@ -33,18 +40,24 @@ const DashBoard = props => {
   const [visible, setVisible] = React.useState(false);
   const [productlist, setProductlist] = React.useState([]);
   const [data, setdata] = React.useState([]);
-   const [Loading, setLoadinga] = React.useState(true);
+  const [Loading, setLoadinga] = React.useState(true);
   const dispatch = useDispatch();
-  const {ProductItemPress, Listdata,
-    setListdata,setAddkartItem,checklogout
-} = useDashboardContext();
+  const {ProductItemPress, Listdata, setListdata, setAddkartItem, checklogout} =
+    useDashboardContext();
 
-const {modalVisible, setModalVisible} =  useAuthContext()
+  const {
+    modalVisible,
+    setModalVisible,
+    searchvalue,
+    setSearchvalue,
+    setSearchdata,
+  } = useAuthContext();
 
-  const Productdata = useSelector(state => {
+  var Productdata = [];
+
+  Productdata = useSelector(state => {
     return state.ListReducers;
   });
-
 
   const countdata = useSelector(state => {
     // console.log('state.Reducers', state);
@@ -52,13 +65,44 @@ const {modalVisible, setModalVisible} =  useAuthContext()
   });
   let datacount = [...countdata];
 
+  //backhandler
+
+  const route = useRoute();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (route.name === 'Dashboard') {
+          Alert.alert('Hold on!', 'Are you sure you want to Exit App?', [
+            {
+              text: 'Cancel',
+              onPress: () => null,
+              style: 'cancel',
+            },
+            {text: 'YES', onPress: () => BackHandler.exitApp()},
+          ]);
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, []),
+  );
   //use effect for getproduct list
   useEffect(() => {
-    checklogout()
+    checklogout();
     Productdata.length > 0 ? setLoadinga(false) : GetProduct();
     console.log('helloinjfhgjfh jdfg fdjg fd');
   }, []);
 
+  //modal open close
   const closeMenu = () => {
     setVisible(false);
   };
@@ -67,42 +111,75 @@ const {modalVisible, setModalVisible} =  useAuthContext()
     setVisible(true);
     console.log('helloo');
     setTimeout(() => {
-      closeMenu()
+      closeMenu();
     }, 3000);
   };
-
+  //Api call Get product
   const GetProduct = () => {
-    setLoadinga(true)
+    setLoadinga(true);
     axios.get(`https://fakestoreapi.com/products`).then(response => {
       // setProductlist(response.data);
-      setLoadinga(false)
+      setLoadinga(false);
       dispatch(ProductlistItems(response.data));
     });
   };
+  //Refresh page
+  const onRefresh = () => {
+    setSearchvalue('');
+    setSearchdata([]);
+  };
 
+  //add item in add kart
   const addItem = (item, index) => {
     dispatch(addItemtoKart(item));
     dispatch(RemovelistItems(index));
     Alert.alert('AddToKart Successfully!');
   };
 
+  //search item from product
+  const SearchItem = () => {
+    console.log('searchvalue==========', searchvalue);
+    if (searchvalue != '') {
+      var newdata = Productdata.filter(elem => {
+        return (
+          elem.title.toLowerCase().match(searchvalue.toLowerCase()) ||
+          elem.category.toLowerCase().match(searchvalue.toLowerCase())
+        );
+      });
+      setProductlist(newdata);
+    } else {
+      setProductlist(Productdata);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Provider>
+        {/* //Topbar */}
         <CustomTopBar
           title={'ApnaKart'}
           onDismiss={closeMenu}
           showmenu={showmenu}
           datacount={datacount}
+          route={route.name}
           visible={visible}
           RighticonPress={() => props.navigation.navigate('Addkart')}
           LeftIconPress={() => props.navigation.openDrawer()}
-          searchIconPress={() => {setModalVisible(true)}}
+          searchIconPress={() => {
+            setModalVisible(true);
+            setSearchvalue('');
+            setSearchdata([]);
+          }}
           LeftIcon={'menu'}
           MenuItem={
             <>
               <Menu.Item onPress={() => {}} title="Setting" />
-              <Menu.Item onPress={() => {setModalVisible(true)}} title="Search" />
+              <Menu.Item
+                onPress={() => {
+                  setModalVisible(true);
+                }}
+                title="Search"
+              />
               <Menu.Item onPress={() => {}} title="Filter" />
               <Menu.Item onPress={() => {}} title="Help" />
               <Menu.Item onPress={() => {}} title="FeedBack" />
@@ -111,25 +188,33 @@ const {modalVisible, setModalVisible} =  useAuthContext()
           }
         />
 
-       {Loading ? (
+        {Loading ? (
           <View style={styles.nodataStyle}>
-             <Text style={styles.nodataTextStyle}>Loading...</Text>
-           <ActivityIndicator animating={true} color={'#fc4e03'} size={30}/>
+            <Text style={styles.nodataTextStyle}>Loading...</Text>
+            <ActivityIndicator animating={true} color={'#fc4e03'} size={30} />
           </View>
         ) : null}
 
-
         <View style={styles.FlatListView}>
           <FlatList
-            data={Productdata}
+            data={searchvalue.length > 0 ? productlist : Productdata}
             numColumns={2}
+            refreshing={Loading}
+            onRefresh={() => {
+              onRefresh();
+            }}
             keyExtractor={item => item.id}
             renderItem={({item, index}) => (
-              <Item onPress={() => addItem(item, index)} ProductItemPress={(item)=>{  
-              props.navigation.navigate('ProductInfo')
-              setAddkartItem(true)
-              ProductItemPress(item,index)
-              }} item={item} />
+              <Item
+                onPress={() => addItem(item, index)}
+                productlist={productlist}
+                ProductItemPress={item => {
+                  props.navigation.navigate('ProductInfo');
+                  setAddkartItem(true);
+                  ProductItemPress(item, index);
+                }}
+                item={item}
+              />
             )}
             ListFooterComponent={
               <View style={styles.ListFooterComponent}></View>
@@ -143,8 +228,8 @@ const {modalVisible, setModalVisible} =  useAuthContext()
           </View>
         ) : null} */}
 
-       <CustomModal
-       />
+        {/* //Search modal with funtion */}
+        <CustomModal data={Productdata} onPress={() => SearchItem()} />
         <View style={{marginHorizontal: 40, alignSelf: 'center'}}></View>
       </Provider>
     </View>
@@ -153,10 +238,14 @@ const {modalVisible, setModalVisible} =  useAuthContext()
 
 export default DashBoard;
 
-const Item = ({item, onPress,ProductItemPress}) => {
-  var price = item.price*81
+
+//Flatelist Item function
+const Item = ({item, productlist, onPress, ProductItemPress}) => {
+  var price = item.price * 81;
   return (
-    <TouchableOpacity onPress={()=>ProductItemPress(item)} style={styles.main}>
+    <TouchableOpacity
+      onPress={() => ProductItemPress(item)}
+      style={[styles.main]}>
       <View>
         <Image
           source={{uri: item.image}}
@@ -178,9 +267,6 @@ const Item = ({item, onPress,ProductItemPress}) => {
   );
 };
 
-{
-  /* <Button onPress={() => props.navigation.openDrawer()} title="Press" /> */
-}
 {
   /* <View style={{marginTop: 40}}>
         <Rating

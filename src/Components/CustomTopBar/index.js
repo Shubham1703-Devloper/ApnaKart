@@ -43,6 +43,7 @@ const CustomTopBar = ({
   onDismiss,
   LeftIconPress,
   LeftIcon,
+  route,
   path,
 }) => {
   return (
@@ -55,15 +56,16 @@ const CustomTopBar = ({
           style={{paddingLeft: 3}}
         />
         <Appbar.Content title={title} subtitle={'India'} />
-        <Appbar.Action icon="magnify" onPress={searchIconPress} />
+        {route == 'Dashboard' ? (
+          <Appbar.Action icon={'magnify'} onPress={searchIconPress} />
+        ) : null}
+
         <View style={styles.menuStyle}>
           {datacount.length !== 0 ? (
             <View style={styles.shopingkart}>
               <Text style={styles.rediconText}>{datacount.length}</Text>
             </View>
-          ) : (
-            null
-          )}
+          ) : null}
 
           <Appbar.Action
             icon="cart-heart"

@@ -31,7 +31,7 @@ export default styles = StyleSheet.create({
   FlatListView: {
     // paddingTop: 65,
     // paddingHorizontal:10,
-    alignItems:'center'
+    // alignItems:'center'
   },
  
   textStyle: {
@@ -124,9 +124,9 @@ export default styles = StyleSheet.create({
   main: {
     width: '45%',
     margin: 10,
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: 'white',
+    padding:10,
+    borderRadius:10,
+    backgroundColor:'white',
     shadowColor: '#000',
     shadowOffset: {
       width: 2,
