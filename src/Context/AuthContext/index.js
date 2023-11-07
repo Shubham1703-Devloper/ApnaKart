@@ -25,6 +25,9 @@ export function AuthContextProvider({children}) {
   const [loginuser, setloginuser] = useState({});
   const [logout, setLogout] = useState(false)
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchdata, setSearchdata] = useState([]);
+  const [ searchvalue, setSearchvalue,] = useState('');
+ 
 
   const getdataformlocal = async () => {
  
@@ -42,6 +45,8 @@ export function AuthContextProvider({children}) {
     setLogout(data);
   };
 
+
+
   const contextPayload = useMemo(
     () => ({
       // States
@@ -53,6 +58,8 @@ export function AuthContextProvider({children}) {
       loginuser, setloginuser,userdata, setuserdata,
       logout, setLogout,
       modalVisible, setModalVisible,
+      searchdata, setSearchdata,
+      searchvalue, setSearchvalue,
 
       //API calls
 
@@ -60,7 +67,7 @@ export function AuthContextProvider({children}) {
 
       //functions
       getdataformlocal,
-      checklogin
+      checklogin,
     }),
     [
       // States
@@ -72,6 +79,8 @@ export function AuthContextProvider({children}) {
       loginuser, setloginuser,userdata, setuserdata,
       logout, setLogout,
       modalVisible, setModalVisible,
+      searchdata, setSearchdata,
+      searchvalue, setSearchvalue,
 
       //API calls
 
@@ -79,7 +88,7 @@ export function AuthContextProvider({children}) {
 
       //functions
       getdataformlocal,
-      checklogin
+      checklogin,
     ],
   );
 

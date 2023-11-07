@@ -11,6 +11,7 @@ import {
   Pressable,
   Alert,
   ScrollView,
+  BackHandler,
 } from 'react-native';
 import {ActivityIndicator, MD2Colors} from 'react-native-paper';
 import {Avatar, Button} from 'react-native-paper';
@@ -28,6 +29,7 @@ import {userLogindata} from '../../../Redux/Actions/Actions';
 import {useDashboardContext} from '../../../Context/DashboardContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthContext } from '../../../Context/AuthContext';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
@@ -61,6 +63,32 @@ const Login = props => {
     loginstart();
     checklogin()
   }, []);
+
+  const route = useRoute();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (route.name === 'Login') {
+          Alert.alert('Hold on!', 'Are you sure you want to Exit App?', [
+          {
+            text: 'Cancel',
+            onPress: () => null,
+            style: 'cancel',
+          },
+          {text: 'YES', onPress: () => BackHandler.exitApp()},
+        ]);
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => subscription.remove();
+    }, [])
+  );
 
   const checklogin = async () => {
     var data;
