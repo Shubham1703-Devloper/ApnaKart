@@ -81,7 +81,7 @@ const CustomModal = ({data,onPress}) => {
       transparent={true}
       visible={modalVisible}
       onRequestClose={() => {
-        Alert.alert('Modal has been closed.');
+        // Alert.alert('Modal has been closed.');
         setModalVisible(!modalVisible);
       }}>
       <View style={styles.centeredView}>
@@ -99,6 +99,8 @@ const CustomModal = ({data,onPress}) => {
               mode="outlined"
               placeholder="Search"
               value={searchvalue}
+              returnKeyType="search"
+              onSubmitEditing={(event) =>  rightIconPress(event)}
               onChangeText={searchvalue => SearchItem(searchvalue)}
               Searchbar={false}
               rightIcon={<TextInput.Icon onPress={()=>{

@@ -28,7 +28,9 @@ import {
   addItemtoKart,
 } from '../../../../Redux/Actions/Actions';
 import CustomButton from '../../../../Components/Button';
+import ViewMoreText from 'react-native-view-more-text';
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
+import ReadMore from '@fawazahmed/react-native-read-more';
 
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
@@ -117,8 +119,13 @@ const ProductInfo = props => {
               </Text>
             </View>
             <Text style={styles.Type}>Type - {ItemInfo?.category}</Text>
-
-            <Text style={styles.description}>{ItemInfo?.description}</Text>
+            <ReadMore
+              seeMoreStyle={styles.seeMoreText}
+              seeLessStyle={styles.seeMoreText}
+              numberOfLines={3}
+              style={styles.description}>
+              <Text style={styles.description}>{ItemInfo?.description}</Text>
+            </ReadMore>
 
             {/* <View style={styles.midbuttonView}>
           <TouchableOpacity
@@ -149,19 +156,18 @@ const ProductInfo = props => {
                 Alert.alert('AddToKart Successfully!');
               }}
               titleStyle={styles.titleStyle}
-              buttonStyle={AddkartItem ? styles.buttonStyle : styles.redbuttonStyle}
+              buttonStyle={
+                AddkartItem ? styles.buttonStyle : styles.redbuttonStyle
+              }
               purpleStyle
-              title = {AddkartItem ? "ADD TO CART" : 'Remove From Cart'}
+              title={AddkartItem ? 'ADD TO CART' : 'Remove From Cart'}
             />
           </View>
 
           <Divider style={styles.deviderStyle} />
 
-         
-
-
           <View style={styles.FlatListView}>
-          <Text style={styles.SimilarType}>Similar Products</Text>
+            <Text style={styles.SimilarType}>Similar Products</Text>
             <FlatList
               data={Productdata}
               numColumns={2}
@@ -172,7 +178,7 @@ const ProductInfo = props => {
                   ProductItemPress={item => {
                     props.navigation.navigate('ProductInfo');
                     onPressTouch();
-                    setAddkartItem(true)
+                    setAddkartItem(true);
                     ProductItemPress(item, index);
                   }}
                   item={item}
@@ -185,11 +191,10 @@ const ProductInfo = props => {
           </View>
 
           {Productdata?.length == 0 ? (
-          <View style={styles.nodataStyle}>
-            <Text style={styles.nodataTextStyle}>No Data Found!</Text>
-          </View>
-        ) : null}
-      
+            <View style={styles.nodataStyle}>
+              <Text style={styles.nodataTextStyle}>No Data Found!</Text>
+            </View>
+          ) : null}
         </ScrollView>
 
         <View style={{marginBottom: 60, alignSelf: 'center'}}></View>

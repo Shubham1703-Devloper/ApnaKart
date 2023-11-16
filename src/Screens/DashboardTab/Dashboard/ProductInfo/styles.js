@@ -165,7 +165,7 @@ export default styles = StyleSheet.create({
   },
   imageItemstyle: {
     width: '100%',
-    height: 200,
+    height:160,
   },
 
   TittleStyle: {
@@ -188,4 +188,8 @@ export default styles = StyleSheet.create({
   titleStyle: {
     fontSize: 14,
   },
+  seeMoreText:{
+    color:'grey',
+    fontWeight:'bold'
+  }
 });

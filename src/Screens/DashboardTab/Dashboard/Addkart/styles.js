@@ -60,7 +60,7 @@ nodataStyle:{
   },
   imagestyle:{
     width:'100%',
-    height:200,
+    height:160,
   },
   TittleStyle:{
     fontSize:16,
@@ -72,8 +72,8 @@ nodataStyle:{
     fontWeight:'bold'
   },
   buttonStyle:{
-    backgroundColor: 'red',
-    borderColor:'red'
+    backgroundColor: '#fc4e03',
+    borderColor:'#fc4e03'
   },
   titleStyle:{
     fontSize:14
