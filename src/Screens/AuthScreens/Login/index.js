@@ -255,10 +255,14 @@ const Login = props => {
                 onChangeText={Passward => setPassward(Passward)}
               />
 
+              <View style={styles.ForgotView}>
               <TouchableOpacity onPress={() => {}}>
                 {/* props.navigation.navigate('Forgotpassward') */}
                 <Text style={styles.forgottext}>Forgot Your Passward</Text>
               </TouchableOpacity>
+              </View>
+
+
 
               <TouchableOpacity
                 style={styles.button}
@@ -334,8 +338,10 @@ const styles = StyleSheet.create({
   },
   forgottext: {
     marginTop: 10,
-    marginLeft: 130,
-    alignSelf: 'flex-end',
+  },
+  ForgotView:{
+    alignItems:'flex-end',
+    width:'90%'
   },
   button: {
     height: 50,
